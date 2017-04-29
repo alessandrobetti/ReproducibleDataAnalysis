@@ -28,7 +28,16 @@ def get_fremont_data(filename= 'Fremont.csv', url= fremont_URL, force_download= 
 	# read dataframe from URL link address and use the 'Date' column as the index column itself
     # (data is now index by the Date itself, not the row number)
     # parse_dates= True set the column 'Date' to dates, rather than strings
-	data= pd.read_csv(filename, index_col= 'Date', parse_dates= True)
+	data= pd.read_csv(filename, index_col= 'Date') # parse_dates= True makes parsing too slow!!!
+	
+	try:
+		# Format is specified to increase parsing speed (make faster code: refactoring code)
+		# (parse_dates= True makes parsing too slow)
+		dataindex= pd.to_datetime(data.index, format= '%m/%d/%Y %H:%M:%S %p')
+	except TypeError:
+		# if the format may change in the future, an exception is thrown and default parsing is done
+		dataindex= pd.to_datetime(data.index)
+		
 	data.columns= ['West', 'East']
 	# add a column to the dataframe (there is an offset between west and east, so summing the flux we can see
 	# that the sum is almost constant)
